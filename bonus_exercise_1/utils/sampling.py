@@ -25,7 +25,13 @@ def monte_carlo(
     # distributions (see include_axis_dim parameter of
     # cp.Distribution.sample).
     # ====================================================================
-    mean, rmse = np.zeros(1), np.zeros(1)
+    samples = p.sample(n_samples, rule=rule, seed=seed, include_axis_dim=True)
+    if transform is not None:
+        samples = transform(samples)
+    values = f(samples)
+    mean = np.mean(values, axis=-1)
+    std = np.std(values, axis=-1, ddof=1)
+    rmse = std / np.sqrt(n_samples)
     # ====================================================================
     return mean, rmse
 
@@ -42,7 +48,16 @@ def control_variates(
     # approximation. Make sure the function works for both 1-dimensional
     # and n-dimensional distributions.
     # ====================================================================
-    mean = np.zeros(1)
+    samples = p.sample(n_samples, seed=seed, include_axis_dim=True)
+    values_f = f(samples)
+    values_phi = phi(samples)
+    mean_f = np.mean(values_f, axis=-1, keepdims=True)
+    mean_phi = np.mean(values_phi, axis=-1, keepdims=True)
+
+    cov = np.mean((values_f - mean_f) * (values_phi - mean_phi), axis=-1)
+    alpha = cov / np.var(values_phi, axis=-1)
+
+    mean = np.mean(values_f, axis=-1) + alpha * (control_mean - np.mean(values_phi, axis=-1))
     # ====================================================================
     return mean
 
@@ -58,6 +73,8 @@ def importance_sampling(
     # approximation. Make sure the function works for both 1-dimensional
     # and n-dimensional distributions.
     # ====================================================================
-    mean = np.zeros(1)
+    samples = q.sample(n_samples, seed=seed, include_axis_dim=True)
+    values = f(samples)
+    mean = np.mean(values * (p.pdf(samples) / q.pdf(samples)), axis=-1)
     # ====================================================================
     return mean
