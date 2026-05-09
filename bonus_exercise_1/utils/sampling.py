@@ -19,13 +19,19 @@ def monte_carlo(
     rule: str = "random",
     seed: float = 42,
 ) -> tuple[npt.NDArray, npt.NDArray]:
-    # TODO: implement the Monte Carlo method.
+    #  ✓ TODO: implement the Monte Carlo method.
     # Return the mean approximation and the corresponding RMSE. Make sure
     # the function works for both 1-dimensional and n-dimensional
     # distributions (see include_axis_dim parameter of
     # cp.Distribution.sample).
     # ====================================================================
-    mean, rmse = np.zeros(1), np.zeros(1)
+    samples = p.sample(n_samples, rule=rule, seed=seed, include_axis_dim=True)
+    if transform is not None:
+        samples = transform(samples)
+
+    values = f(samples)
+    mean = np.mean(values, axis=-1, dtype=float)
+    rmse = compute_rmse(values)
     # ====================================================================
     return mean, rmse
 
