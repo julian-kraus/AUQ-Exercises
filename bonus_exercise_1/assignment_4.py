@@ -182,7 +182,7 @@ if __name__ == "__main__":
         )
         mean_errors_MonteCarlo[_index_MC] = error_tuple[0]
         var_errors_MonteCarlo[_index_MC] = error_tuple[1]
-        index_MC = _index_MC + 1
+        _index_MC = _index_MC + 1
 
     # Statistics for Quasi-Monte-Carlo based on Halton - mean and variance error for each N and for y(t_analyzed)
     # Save the results in an array instead of map because the size is clear and also ease of plotting later
@@ -197,7 +197,7 @@ if __name__ == "__main__":
         )
         mean_errors_QuasiMonteCarlo_Halton[_index_QMC] = error_tuple[0]
         var_errors_QuasiMonteCarlo_Halton[_index_QMC] = error_tuple[1]
-        index_QMC = _index_QMC + 1
+        _index_QMC = _index_QMC + 1
     # ====================================================================
 
     # TODO-DONE: plot the results on the log-log scale.
@@ -205,26 +205,26 @@ if __name__ == "__main__":
     #pass #placeholder
 
     #Plotting relative error of the mean over number of samples
-    fig, plot = plt.subplots()
-    plot.set_title("Mean Relative Err")
-    plot.set_xlabel("Number of samples")
-    plot.set_ylabel("Mean Rel Error")
-    plot.loglog(Ns, mean_errors_MonteCarlo, label="MonteCarlo")
-    plot.loglog(Ns, mean_errors_QuasiMonteCarlo_Halton, label="QuasiMonteCarlo_Halton")
-    plot.legend()
-    fig.tight_layout()
-    fig.savefig("a4_mean_rel_err_plot.png")
+    fig1, plot1 = plt.subplots()
+    plot1.set_title("Mean Relative Err")
+    plot1.set_xlabel("Number of samples")
+    plot1.set_ylabel("Mean Rel Error")
+    plot1.loglog(Ns, mean_errors_MonteCarlo, label="MonteCarlo")
+    plot1.loglog(Ns, mean_errors_QuasiMonteCarlo_Halton, label="QuasiMonteCarlo_Halton")
+    plot1.legend()
+    fig1.tight_layout()
+    fig1.savefig("a4_mean_rel_err_plot.png")
 
     #Plotting relative error of the variance over number of samples
-    fig, axes = plt.subplots()
-    axes.set_title("Variance Relative Err")
-    axes.set_xlabel("Number of samples")
-    axes.set_ylabel("Var Rel Error")
-    axes.loglog(Ns, var_errors_MonteCarlo, label="MonteCarlo")
-    axes.loglog(Ns, var_errors_QuasiMonteCarlo_Halton, label="QuasiMonteCarlo_Halton")
-    axes.legend()
-    fig.tight_layout()
-    fig.savefig("a4_mean_var_err_plot.png")
+    fig2, axes2 = plt.subplots()
+    axes2.set_title("Variance Relative Err")
+    axes2.set_xlabel("Number of samples")
+    axes2.set_ylabel("Var Rel Error")
+    axes2.loglog(Ns, var_errors_MonteCarlo, label="MonteCarlo")
+    axes2.loglog(Ns, var_errors_QuasiMonteCarlo_Halton, label="QuasiMonteCarlo_Halton")
+    axes2.legend()
+    fig2.tight_layout()
+    fig2.savefig("a4_mean_var_err_plot.png")
     # ====================================================================
 
     # TODO-DONE: plot sampled trajectories.
@@ -248,4 +248,3 @@ if __name__ == "__main__":
     fig.tight_layout()
     fig.savefig("a4_ODE_solutions.png")
     # ====================================================================
-    
