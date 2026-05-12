@@ -139,18 +139,18 @@ if __name__ == "__main__":
     # ====================================================================
     fig, ax = plt.subplots(figsize=(8, 5))
 
-    ax.loglog(Ns, mc_errors, marker="o", label="Monte Carlo")
-    ax.loglog(Ns, cv_h1_errors, marker="o", label=r"CV: $h_1(x)=x$")
-    ax.loglog(Ns, cv_h2_errors, marker="o", label=r"CV: $h_2(x)=1+x$")
-    ax.loglog(Ns, cv_h3_errors, marker="o", label=r"CV: $h_3(x)=1+x+x^2/2$")
-    ax.loglog(Ns, is_beta_5_1_errors, marker="o", label=r"IS: $Beta(5,1)$")
-    ax.loglog(Ns, is_beta_05_05_errors, marker="o", label=r"IS: $Beta(0.5,0.5)$")
+    ax.loglog(Ns, mc_errors, marker="o", linestyle="-", label="Monte Carlo")
+    ax.loglog(Ns, cv_h1_errors, marker="s", linestyle="--", linewidth=3, label=r"CV: $h_1(x)=x$")
+    ax.loglog(Ns, cv_h2_errors, marker="^", linestyle="--", label=r"CV: $h_2(x)=1+x$")
+    ax.loglog(Ns, cv_h3_errors, marker="D", linestyle="--", label=r"CV: $h_3(x)=1+x+x^2/2$")
+    ax.loglog(Ns, is_beta_5_1_errors, marker="*", linestyle=":", label=r"IS: $Beta(5,1)$")
+    ax.loglog(Ns, is_beta_05_05_errors, marker="P", linestyle=":", label=r"IS: $Beta(0.5,0.5)$")
 
     ax.set_xlabel("Number of samples $N$")
     ax.set_ylabel("Absolute error")
     ax.set_title("Monte Carlo variance reduction comparison")
     ax.legend()
-    ax.grid(True, which="both")
+    ax.grid(True, axis="y")
 
     plt.tight_layout()
     plt.show()
