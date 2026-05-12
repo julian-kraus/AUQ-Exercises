@@ -30,8 +30,7 @@ def monte_carlo(
         samples = transform(samples)
     values = f(samples)
     mean = np.mean(values, axis=-1)
-    std = np.std(values, axis=-1, ddof=1)
-    rmse = std / np.sqrt(n_samples)
+    rmse = compute_rmse(values)
     # ====================================================================
     return mean, rmse
 
