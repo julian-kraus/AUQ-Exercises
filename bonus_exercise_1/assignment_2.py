@@ -44,7 +44,7 @@ def integrate_mc(
     #  ✓ TODO: compute the integral with the Monta Carlo method.
     # Depending on 'with_transform', use the uniform distribution on [a, b]
     # directly or transform the uniform distribution on [0, 1] to [a, b].
-    # Return the integral estimate and the corresponding RMSE.
+    # Return the integral estimate and the corresponding rmse.
     # ====================================================================
     if with_transform:
         distr = cp.Uniform(0, 1)
@@ -79,17 +79,17 @@ if __name__ == "__main__":
 
     for seed in seeds:
         exact_errors = []
-        rsmes = []
+        rmses = []
 
         for n_samples in sample_sizes:
             integral, rmse = integrate_mc(f, a, b, n_samples, seed=seed)
             exact_errors.append(np.abs(F - integral))
-            rsmes.append(rmse)
+            rmses.append(rmse)
 
         plt.figure()
 
         plt.loglog(sample_sizes, exact_errors, marker="o", label="Exact error")
-        plt.loglog(sample_sizes, rsmes, marker="o", label="RSME")
+        plt.loglog(sample_sizes, rmses, marker="o", label="rmse")
 
         plt.title(f"Exact error vs RMSE (a=0, b=1, seed={seed})")
         plt.xlabel("Sample size")
@@ -109,28 +109,28 @@ if __name__ == "__main__":
     for seed in seeds:
         # With transform
         exact_errors_tr = []
-        rsmes_tr = []
+        rmses_tr = []
 
         # Without transform
         exact_errors_no_tr = []
-        rsmes_no_tr = []
+        rmses_no_tr = []
 
         for n_samples in sample_sizes:
             integral, rmse = integrate_mc(f, a, b, n_samples, seed=seed, with_transform=True)
             exact_errors_tr.append(np.abs(F - integral))
-            rsmes_tr.append(rmse)
+            rmses_tr.append(rmse)
 
         for n_samples in sample_sizes:
             integral, rmse = integrate_mc(f, a, b, n_samples, seed=seed, with_transform=False)
             exact_errors_no_tr.append(np.abs(F - integral))
-            rsmes_no_tr.append(rmse)
+            rmses_no_tr.append(rmse)
 
         plt.figure()
 
         plt.loglog(sample_sizes, exact_errors_tr, marker="o", label="Exact error (with transform)")
-        plt.loglog(sample_sizes, rsmes_tr, marker="o", label="RSME (with transform)")
-        plt.loglog(sample_sizes, exact_errors_tr, marker="x", label="Exact error (without transform)")
-        plt.loglog(sample_sizes, rsmes_tr, marker="x", label="RSME (without transform)")
+        plt.loglog(sample_sizes, rmses_tr, marker="o", label="RMSE (with transform)")
+        plt.loglog(sample_sizes, exact_errors_no_tr, marker="x", label="Exact error (without transform)")
+        plt.loglog(sample_sizes, rmses_no_tr, marker="x", label="RMSE (without transform)")
 
         plt.title(f"Exact error vs RMSE (a=2, b=4, seed={seed})")
         plt.xlabel("Sample size")
