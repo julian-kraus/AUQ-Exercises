@@ -1,5 +1,4 @@
 from collections import defaultdict
-
 import chaospy as cp
 import matplotlib.pyplot as plt
 import numpy as np
@@ -71,9 +70,9 @@ def compute_errors(
     # mean_error, var_error = 0, 0 #placeholder
 
     # Using numpy, some quick statistics
-    mean_of_estimation = np.mean(samples)
+    mean_of_estimation = np.mean(samples, dtype=float)
     # Taking the unbiased estimator as in the tutor exercises (normalization with 1/n-1)
-    var_of_estimation = np.var(samples, ddof=1)
+    var_of_estimation = np.var(samples, ddof=1, dtype=float)
 
     # Using the relative error formula from the task sheet
     mean_error = np.abs(1-mean_of_estimation/mean_ref)
@@ -157,7 +156,7 @@ if __name__ == "__main__":
     # In the specific Assignment 4, t = 10 is the last time point for the simulation with index 1000
     # But it could be that we want to see statistics for another time step
     # Calculate the index of t_analyzed in the time point grid
-    t_analyzed_index = np.where(t_grid == t_analyzed)[0][0]
+    t_analyzed_index = np.where(np.isclose(t_grid,t_analyzed))[0][0]
 
     # Extract the columns for y at t_analyzed
     simulations_MonteCarlo_at_t_analyzed = defaultdict(lambda: np.ndarray(0))
