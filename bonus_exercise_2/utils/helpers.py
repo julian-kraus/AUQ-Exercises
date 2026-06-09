@@ -103,3 +103,7 @@ def simulate(
 
     # ====================================================================
     return sample_solutions
+
+# An extra helper function to compute the relative error between 2 values
+def relative_error(value: float, reference: float) -> float:
+    return abs(value - reference) / abs(reference)
