@@ -54,12 +54,12 @@ if __name__ == "__main__":
     #Very small differences here, so using 1e-10 as the scale
     imshow1 = axes1.imshow(diff_identity_1,cmap="PiYG",aspect='auto',vmin=-1e-10, vmax=1e-10)
     fig1.colorbar(imshow1, ax=axes1)
-    fig1.savefig("a_2_diff_colormap_uniform.png")
+    fig1.savefig("a2_diff_colormap_uniform.png")
 
     fig2, axes2 = plt.subplots()
     axes2.set_title("Difference b/w <phi_i(x),phi_j(x)>_nor and I")
     #Not as small differences here, so using 1e-5 as the scale
     imshow2 = axes2.imshow(diff_identity_2,cmap="PiYG",aspect='auto',vmin=-1e-5, vmax=1e-5)
     fig2.colorbar(imshow2, ax=axes2)
-    fig2.savefig("a_2_diff_colormap_normal.png")
+    fig2.savefig("a2_diff_colormap_normal.png")
     # ====================================================================
