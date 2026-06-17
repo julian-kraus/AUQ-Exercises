@@ -121,11 +121,7 @@ if __name__ == "__main__":
     omega_bounds = (0.95, 1.05)
 
     # Time points from 0 to 10 with t_delta = 0.01
-    # Arrange creates values in half-open interval [start, stop),
-    # hence padding the stop with an additional step
-    t_grid = np.arange(0, 10.01, 0.01)
-
-    # Time point of interest is y_0(10)
+    # Time point of interest is y_0(10), so no need to generate a time grid
     t_target = 10
 
     # Number of interpolation points:
@@ -148,7 +144,7 @@ if __name__ == "__main__":
 
     for n in N:
         start_pce_iter = time.time()
-        # Build the |N| Lagrange interpolants
+        # Build the |N| Lagrange interpolators
         interpolator = fit_lagrange(omega_bounds=omega_bounds,
                                     n_nodes=n,
                                     target_t=t_target,
@@ -217,15 +213,15 @@ if __name__ == "__main__":
     # pass # placeholder
 
     #Plotting relative error of the mean over number of samples
-    fig1, plot1 = plt.subplots()
-    plot1.set_title("Mean Relative Err")
-    plot1.set_xlabel("Number of samples")
-    plot1.set_ylabel("Mean Rel Error")
-    plot1.loglog(M, mean_errors_mc, label="Monte Carlo", marker='o')
+    fig1, axes1 = plt.subplots()
+    axes1.set_title("Mean Relative Err")
+    axes1.set_xlabel("Number of samples")
+    axes1.set_ylabel("Mean Rel Error")
+    axes1.loglog(M, mean_errors_mc, label="Monte Carlo", marker='o')
     linestyles = ["solid", "dashed" , "dotted", (0,(1,10))]
     for i, n in enumerate(N):
-        plot1.loglog(M, mean_errors_pce[i,:], label="Lagrange for n="+repr(n), marker='o', linestyle=linestyles[i])
-    plot1.legend()
+        axes1.loglog(M, mean_errors_pce[i,:], label="Lagrange for n="+repr(n), marker='o', linestyle=linestyles[i])
+    axes1.legend()
     fig1.tight_layout()
     fig1.savefig("a1_mean_rel_err_plot.png")
 
