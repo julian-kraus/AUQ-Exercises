@@ -28,13 +28,13 @@ def estimate_monte_carlo(
 
     #Fixed the seed, to get reproducible results
     omega_samples = omega_distr.sample(size=np.array([n_samples]), rule="random", seed=42)
-    solutions_mc = simulate(t_grid=time_grid,
+    #Discretize the oscillator
+    #Return the values for target time only,so index -1
+    solutions = simulate(t_grid=time_grid,
                          omega_samples=omega_samples,
                          model_kwargs=model_kwargs,
                          init_cond=init_cond
-                         )
-    #Return the values for target time only,so index -1
-    solutions = solutions_mc[:,-1]
+                         )[:,-1]
 
     # ====================================================================
     return solutions
@@ -55,25 +55,17 @@ def fit_lagrange(
     # Using Chebyshev grid, as per the hint
     grid = generate_grid(bounds=omega_bounds, n_nodes=n_nodes, grid_type="chebyshev")
 
-    # The values are the evaluations at the interpolation points
-    values = np.empty(n_nodes)
+    # To calculate the values at the interpolation points, we need to use the discretization of the oscillator
+    # We can do it manualy or use the helper function simulate
 
-    # To calculate the values for the interpolation points, we need to use the discretization of the oscillator
-
-    # The deterministic oscillator parameters are:
-    c = model_kwargs["c"]
-    k = model_kwargs["k"]
-    f = model_kwargs["f"]
-    y0 = init_cond["y0"]
-    y1 = init_cond["y1"]
-    method = "odeint" # it's faster than Euler for larger sample sizes as seen in the tutorial
-
+    # Create a time grid for the discretization
     time_grid = np.arange(0, target_t + 0.01, 0.01)
 
-    for _i in range(n_nodes):
-        oscillator = Oscillator(c=c, k=k, f=f, omega=grid[_i])
-        #Interested only in the first component for the target time t=10, so index -1
-        values[_i] = oscillator.discretize(y0=y0, y1=y1, method=method, t_grid=time_grid)[-1]
+    #Get the oscillator values at target_t (index -1) for all n omega nodes of the interpolation grid
+    values = simulate(t_grid = time_grid,
+        omega_samples = grid,
+        model_kwargs = model_kwargs,
+        init_cond = init_cond)[:,-1]
 
     # Fit the interpolator
     interpolator = FirstBarycentricLagrange(nodes=grid, values=values)
@@ -92,6 +84,7 @@ def evaluate_pce(
 
     #Fixed the seed, to get reproducible results
     omega_samples = omega_distr.sample(size=np.array([n_samples]), rule="random", seed=42)
+    #Evaluate the interpolator for the omega samples
     solutions = interpolator.evaluate(omega_samples)
 
     # ====================================================================
