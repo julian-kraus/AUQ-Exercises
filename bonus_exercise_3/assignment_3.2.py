@@ -7,17 +7,18 @@ import matplotlib.lines as lines
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
+from numpoly import square
 
 from utils.oscillator import Oscillator
 from utils.wiener import WienerProcess
 
 
 def generate_f_samples(
-    mu: float,
-    t_grid: npt.NDArray,
-    n_samples: int,
-    M: int | None,
-    rng: np.random.Generator,
+        mu: float,
+        t_grid: npt.NDArray,
+        n_samples: int,
+        M: int | None,
+        rng: np.random.Generator,
 ) -> list[Callable[[float], float]]:
     """Generates samples of the Wiener process."""
 
@@ -43,14 +44,14 @@ def generate_f_samples(
     # that can be used to interpolate at t (given time point)
     callable_functions = [lambda t: 0.0] * n_samples
     for i in range(n_samples):
-            callable_functions[i] = partial(np.interp, xp=t_grid, fp=samples[i])
+        callable_functions[i] = partial(np.interp, xp=t_grid, fp=samples[i])
     return callable_functions
 
 def simulate(
-    t_grid: npt.NDArray,
-    f_samples: list[Callable[[float], float]],
-    model_kwargs: dict[str, float],
-    init_cond: dict[str, float],
+        t_grid: npt.NDArray,
+        f_samples: list[Callable[[float], float]],
+        model_kwargs: dict[str, float],
+        init_cond: dict[str, float],
 ) -> npt.NDArray:
     """Simulates the oscillator model for each sample of f(t)."""
 
@@ -88,13 +89,16 @@ def compute_metrics(solutions: npt.NDArray) -> tuple[npt.NDArray, npt.NDArray]:
     # TODO-DONE: compute the metrics.
     #placeholder return np.zeros(solutions.shape[1]), np.zeros(solutions.shape[1])
 
+    # The assignment sheet actually asks for mean and variance, not standard deviation
+    # But variance is standard variation squared and this helper is already used with standard variance for the logic in the plot_solutions() helper
+
     mean = np.mean(solutions,axis=0)
     standard_deviation = np.std(solutions, axis=0, ddof=1)
 
     return mean, standard_deviation
 
 def plot_solutions(
-    t_grid: npt.NDArray, sampler_solutions: dict[str, npt.NDArray]
+        t_grid: npt.NDArray, sampler_solutions: dict[str, npt.NDArray]
 ) -> plt.Figure:
     """Plots the oscillator trajectories for each sample of f."""
     n_plots = len(sampler_solutions)
@@ -145,6 +149,7 @@ if __name__ == "__main__":
 
     N = 1000
     Ms = [5,10,100]
+    # Reuse seed as in the last bonus assignments
     seed = 42
     rng = np.random.default_rng(seed)
 
@@ -162,15 +167,31 @@ if __name__ == "__main__":
     # mean and standard deviation of the solutions at T_max.
     simulations = defaultdict()
 
-    #Mean and std are calculated by the plot helper provided in the template
-    #mean = defaultdict()
-    #standard_deviation = defaultdict()
+    #Mean and variance are calculated by the plot helper provided in the template, but we need to print them as table too
+    #First, calculate mean and standard deviation with the helper
+    mean = defaultdict()
+    standard_deviation = defaultdict()
 
     for name,f_samples in WP_samples.items():
         simulations[name] = simulate(t_grid=t_grid, f_samples=f_samples, model_kwargs=model_kwargs, init_cond=init_cond)
-        #mean[name],standard_deviation[name]=compute_metrics(simulations[name])
+        mean[name],standard_deviation[name]=compute_metrics(simulations[name])
 
-    # TODO: optionally, plot the solutions for each sample of f.
-    #Plots
+    # TODO-DONE: optionally, plot the solutions for each sample of f.
+    #Plots with the helper
     fig = plot_solutions(t_grid=t_grid, sampler_solutions=simulations)
     fig.savefig("as3_2_simulators.png")
+
+    #Printing mean, variance as requested by the assignment sheet
+    print("Mean:")
+    for name,value in mean.items():
+        print(name+": {}".format(value[-1]))
+
+    #print("Standard Deviation:")
+    #for name,value in standard_deviation.items():
+    #    print(name+": {}".format(value[-1]))
+
+    # Using that variance is standard deviation squared
+    print("Variance:")
+    for name,value in standard_deviation.items():
+        var = np.square(value[-1])
+        print(name+": {}".format(var))
