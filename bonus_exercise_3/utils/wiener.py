@@ -43,7 +43,10 @@ class WienerProcess:
         # Generate random var zeta for each time step and each mode
         zeta = rng.normal(0, 1, size=(n_samples, M))
 
-        term = (m[:, None] + 0.5) * np.pi
+        # The reference formula from http://www.maths.lth.se/matstat/staff/georg/Publications/lecture2004.pdf, page 94
+        # starts for indices at k=0, so the code would be term = (m[:, None] + 0.5) * np.pi with m starting from 0
+        # But we start at m=1, hence - 0.5 in the line below
+        term = (m[:, None] - 0.5) * np.pi
         phi_eig = np.sqrt(2) * np.sin(term * self.t_grid[None, :]) / term
 
         processes = zeta @ phi_eig
