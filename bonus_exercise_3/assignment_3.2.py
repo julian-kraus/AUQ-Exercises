@@ -1,4 +1,5 @@
 import time
+from collections import defaultdict
 from functools import partial
 from typing import Callable
 
@@ -20,13 +21,30 @@ def generate_f_samples(
 ) -> list[Callable[[float], float]]:
     """Generates samples of the Wiener process."""
 
-    # TODO: generate realizations of the Wiener process for f(t).
+    # TODO-DONE: generate realizations of the Wiener process for f(t).
     # If M is None, we generate samples using the standard definition.
     # If M is not None, we generate samples using the KL expansion with M terms.
     # The samples are returned as a list of callable functions that
     # evaluate the Wiener process at a given time point.
-    return [lambda t: 0.0] * n_samples
 
+    #placeholder return [lambda t: 0.0] * n_samples
+
+    wiener = WienerProcess(mu=mu, t_grid=t_grid)
+    # Generating Wiener process samples
+    # (for now, just a list of values, we handle turning the samples into callable later)
+    if M is None:
+        # Generate samples using standard definition
+        samples = wiener.generate(n_samples=n_samples, rng=rng)
+    else:
+        # Generate samples using the KL expansion with M terms
+        samples = wiener.approximate_kl(n_samples=n_samples, M=M, rng=rng)
+
+    # Turning the samples into a list of callable functions
+    # that can be used to interpolate at t (given time point)
+    callable_functions = [lambda t: 0.0] * n_samples
+    for i in range(n_samples):
+            callable_functions[i] = partial(np.interp, xp=t_grid, fp=samples[i])
+    return callable_functions
 
 def simulate(
     t_grid: npt.NDArray,
@@ -36,17 +54,44 @@ def simulate(
 ) -> npt.NDArray:
     """Simulates the oscillator model for each sample of f(t)."""
 
-    # TODO: simulate the oscillator model for each sample of f(t) and
+    # TODO-DONE: simulate the oscillator model for each sample of f(t) and
     # return the trajectories as 2D array.
-    return np.zeros(len(f_samples), len(t_grid))
 
+    #placeholder return np.zeros(len(f_samples), len(t_grid))
+    # Reusing adapted code from Bonus exercise 2
+
+    # The oscillator parameters are:
+    c = model_kwargs["c"]
+    k = model_kwargs["k"]
+    omega = model_kwargs["omega"]
+    y0 = init_cond["y0"]
+    y1 = init_cond["y1"]
+    method = "odeint" # it's faster than Euler for larger sample sizes as seen in the tutorial
+
+    n_samples = len(f_samples)
+
+    # Return data structure: a 2D matrix
+    # Each of the rows corresponds to a simulated oscillator for a sample f in f_samples
+    # Each row contains an evaluated value for each of the time points in T_grid
+    sample_solutions = np.empty((n_samples, len(t_grid)))
+
+    # Simulating (evaluating) the oscillator N times
+    for _i in range(n_samples):
+        oscillator = Oscillator(c=c, k=k, f=f_samples[_i], omega=omega)
+        sample_solutions[_i] = oscillator.discretize(method=method, y0=y0, y1=y1 , t_grid=t_grid)
+
+    return sample_solutions
 
 def compute_metrics(solutions: npt.NDArray) -> tuple[npt.NDArray, npt.NDArray]:
     """Computes the mean and standard deviation of the solutions."""
 
-    # TODO: compute the metrics.
-    return np.zeros(solutions.shape[1]), np.zeros(solutions.shape[1])
+    # TODO-DONE: compute the metrics.
+    #placeholder return np.zeros(solutions.shape[1]), np.zeros(solutions.shape[1])
 
+    mean = np.mean(solutions,axis=0)
+    standard_deviation = np.std(solutions, axis=0, ddof=1)
+
+    return mean, standard_deviation
 
 def plot_solutions(
     t_grid: npt.NDArray, sampler_solutions: dict[str, npt.NDArray]
@@ -75,28 +120,57 @@ def plot_solutions(
 
 
 if __name__ == "__main__":
-    # TODO: set parameters of the model.
-    f_mean = None
-    model_kwargs = {"c": None, "k": None, "omega": None}
-    init_cond = {"y0": None, "y1": None}
+    # TODO-DONE: set parameters of the model.
+    #placeholder f_mean = None
+    #placeholder model_kwargs = {"c": None, "k": None, "omega": None}
+    #placeholder init_cond = {"y0": None, "y1": None}
 
-    # TODO: set the time domain.
-    T_max = None
-    dt = None
+    f_mean = 0.5
+    model_kwargs = {"c": 0.5, "k": 2.0, "omega": 1.0}
+    init_cond = {"y0": 0.5, "y1": 0}
+
+    # TODO-DONE: set the time domain.
+    #placeholder T_max = None
+    #placeholder dt = None
+    #placeholder t_grid = np.arange(0, T_max + dt, dt)
+
+    T_max = 10
+    dt = 0.01
     t_grid = np.arange(0, T_max + dt, dt)
 
-    # TODO: set the number of Monte-Carlo samples and KL terms.
-    N = None
-    Ms = [None]
-    seed = None
+    # TODO-DONE: set the number of Monte-Carlo samples and KL terms.
+    #placeholder N = None
+    #placeholder Ms = [None]
+    #placeholder seed = None
+
+    N = 1000
+    Ms = [5,10,100]
+    seed = 42
     rng = np.random.default_rng(seed)
 
     ###########################################################################
 
-    # TODO: generate samples of the Wiener process for f using the stadard
+    # TODO-DONE: generate samples of the Wiener process for f using the stadard
     # generation and the KL expansion for different M.
 
-    # TODO: simulate the oscillator model for each sample of f and record the
+    WP_samples = defaultdict()
+    WP_samples["standard WP"] = generate_f_samples(mu=f_mean, t_grid=t_grid, n_samples=N, M=None, rng=rng)
+    for M in Ms:
+        WP_samples["KL expansion for M={}".format(M)] = generate_f_samples(mu=f_mean, t_grid=t_grid, n_samples=N, M=M, rng=rng)
+
+    # TODO-DONE: simulate the oscillator model for each sample of f and record the
     # mean and standard deviation of the solutions at T_max.
+    simulations = defaultdict()
+
+    #Mean and std are calculated by the plot helper provided in the template
+    #mean = defaultdict()
+    #standard_deviation = defaultdict()
+
+    for name,f_samples in WP_samples.items():
+        simulations[name] = simulate(t_grid=t_grid, f_samples=f_samples, model_kwargs=model_kwargs, init_cond=init_cond)
+        #mean[name],standard_deviation[name]=compute_metrics(simulations[name])
 
     # TODO: optionally, plot the solutions for each sample of f.
+    #Plots
+    fig = plot_solutions(t_grid=t_grid, sampler_solutions=simulations)
+    fig.savefig("as3_2_simulators.png")
