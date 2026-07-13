@@ -65,6 +65,10 @@ if __name__ == "__main__":
     fig.show()
 
     fig = plot_eigenpairs(WP, n_terms=5, t_grid=t_grid)
+    ax_eigenfunctions = fig.axes[1]  # the eigenfunctions subplot
+    for m, line in enumerate(ax_eigenfunctions.get_lines(), start=1):
+        line.set_label(fr"$\phi_{{{m}}}(t)$")
+    ax_eigenfunctions.legend()
     # plt.savefig("wiener_eigenpairs_5.png", dpi=150)
     fig.show()
 
