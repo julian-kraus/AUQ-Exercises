@@ -161,6 +161,8 @@ if __name__ == "__main__":
     WP_samples = defaultdict()
     WP_samples["standard WP"] = generate_f_samples(mu=f_mean, t_grid=t_grid, n_samples=N, M=None, rng=rng)
     for M in Ms:
+        #Regenerate rng to make sure the same samples are used
+        rng = np.random.default_rng(seed)
         WP_samples["KL expansion for M={}".format(M)] = generate_f_samples(mu=f_mean, t_grid=t_grid, n_samples=N, M=M, rng=rng)
 
     # TODO-DONE: simulate the oscillator model for each sample of f and record the
