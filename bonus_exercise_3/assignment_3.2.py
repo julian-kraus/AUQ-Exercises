@@ -169,14 +169,15 @@ if __name__ == "__main__":
     # mean and standard deviation of the solutions at T_max.
     simulations = defaultdict()
 
-    #Mean and variance are calculated by the plot helper provided in the template, but we need to print them as table too
-    #First, calculate mean and standard deviation with the helper
+    #Mean and standard deviation are calculated by the plot helper provided in the template,
+    #But we need to print mean and variance at t=10 as table too
+    #First, calculate mean and standard deviation for the last time point = 10 with the helper
     mean = defaultdict()
     standard_deviation = defaultdict()
 
     for name,f_samples in WP_samples.items():
         simulations[name] = simulate(t_grid=t_grid, f_samples=f_samples, model_kwargs=model_kwargs, init_cond=init_cond)
-        mean[name],standard_deviation[name]=compute_metrics(simulations[name])
+        mean[name],standard_deviation[name]=compute_metrics(simulations[name][:, -1])
 
     # TODO-DONE: optionally, plot the solutions for each sample of f.
     #Plots with the helper
@@ -186,7 +187,7 @@ if __name__ == "__main__":
     #Printing mean, variance as requested by the assignment sheet
     print("Mean:")
     for name,value in mean.items():
-        print(name+": {}".format(value[-1]))
+        print(name+": {}".format(value))
 
     #print("Standard Deviation:")
     #for name,value in standard_deviation.items():
@@ -195,5 +196,5 @@ if __name__ == "__main__":
     # Using that variance is standard deviation squared
     print("Variance:")
     for name,value in standard_deviation.items():
-        var = np.square(value[-1])
+        var = np.square(value)
         print(name+": {}".format(var))
