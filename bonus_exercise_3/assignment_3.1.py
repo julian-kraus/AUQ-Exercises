@@ -27,8 +27,8 @@ if __name__ == "__main__":
     Ms = [10, 100, 1000]
     seed = 42
     n_samples = 1 # 1 realization of the process
-    rng = np.random.default_rng(seed)
 
+    rng = np.random.default_rng(seed)
     # Initiate the Wiener Process object
     WP = WienerProcess(mu = 0, T=T, n_points=n_points)
     # ✓ TODO: generate one realization of the Wiener process using the
@@ -60,7 +60,11 @@ if __name__ == "__main__":
     plt.show()
 
     # ✓ TODO: visualize first eigenvalues and eigenfunctions.
+    fig = plot_eigenpairs(WP, n_terms=1000, t_grid=t_grid)
+    # plt.savefig("wiener_eigenpairs_1000.png", dpi=150)
+    fig.show()
+
     fig = plot_eigenpairs(WP, n_terms=5, t_grid=t_grid)
-    plt.savefig("wiener_eigenpairs.png", dpi=150)
+    # plt.savefig("wiener_eigenpairs_5.png", dpi=150)
     fig.show()
 
