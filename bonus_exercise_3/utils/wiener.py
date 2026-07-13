@@ -44,7 +44,7 @@ class WienerProcess:
         zeta = rng.normal(0, 1, size=(n_samples, M))
 
         term = (m[:, None] - 0.5) * np.pi
-        phi_eig = np.sqrt(2) * np.sin(term * self.t_grid[None, :]) / term
+        phi_eig = np.sqrt(2 * self.T) * np.sin(term / self.T * self.t_grid[None, :]) / term
 
         processes = zeta @ phi_eig
         # Shift by mean
