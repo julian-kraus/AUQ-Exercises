@@ -7,7 +7,6 @@ import matplotlib.lines as lines
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from numpoly import square
 
 from utils.oscillator import Oscillator
 from utils.wiener import WienerProcess
