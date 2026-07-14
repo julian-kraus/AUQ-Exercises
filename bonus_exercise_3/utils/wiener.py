@@ -27,7 +27,7 @@ class WienerProcess:
         increments = rng.normal(loc=0.0, scale=np.sqrt(dt), size=(n_samples, self.n_points - 1))
 
         process = np.zeros((n_samples, self.n_points))
-        # Compute each row as a cumultative sum from the previous row(s)
+        # Compute each row as a cumulative sum from the previous step(s)
         process[:, 1:] = np.cumsum(increments, axis=1)
         # Shift by mean
         process += self.mu
@@ -45,12 +45,6 @@ class WienerProcess:
 
         term = (m[:, None] - 0.5) * np.pi
         phi_eig = np.sqrt(2 * self.T) * np.sin(term / self.T * self.t_grid[None, :]) / term
-
-        processes = zeta @ phi_eig
-        # Shift by mean
-        processes += self.mu
-        return processes
-
 
         processes = zeta @ phi_eig
         # Shift by mean
