@@ -27,7 +27,7 @@ class WienerProcess:
         increments = rng.normal(loc=0.0, scale=np.sqrt(dt), size=(n_samples, self.n_points - 1))
 
         process = np.zeros((n_samples, self.n_points))
-        # Compute each row as a cumultative sum of previous time steps
+        # Compute each row as a cumultative sum from the previous row(s)
         process[:, 1:] = np.cumsum(increments, axis=1)
         # Shift by mean
         process += self.mu
@@ -52,6 +52,10 @@ class WienerProcess:
         return processes
 
 
+        processes = zeta @ phi_eig
+        # Shift by mean
+        processes += self.mu
+        return processes
 
     def kl_eigenvalues(self, M: int):
 
