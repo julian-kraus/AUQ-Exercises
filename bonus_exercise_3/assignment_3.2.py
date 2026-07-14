@@ -89,7 +89,7 @@ def compute_metrics(solutions: npt.NDArray) -> tuple[npt.NDArray, npt.NDArray]:
     #placeholder return np.zeros(solutions.shape[1]), np.zeros(solutions.shape[1])
 
     # The assignment sheet actually asks for mean and variance, not standard deviation
-    # But variance is standard variation squared and this helper is already used with standard variance for the logic in the plot_solutions() helper
+    # But variance is standard variation squared and this helper is already used with standard deviation for the logic in the plot_solutions() helper
 
     mean = np.mean(solutions,axis=0)
     standard_deviation = np.std(solutions, axis=0, ddof=1)
