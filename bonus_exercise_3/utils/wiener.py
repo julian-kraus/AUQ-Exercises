@@ -20,7 +20,7 @@ class WienerProcess:
 
     def generate(self, n_samples: int, rng: np.random.Generator):
 
-        # TODO: generate n_samples realizations of the Wiener process
+        # ✓ TODO: generate n_samples realizations of the Wiener process
         # Compute dt
         dt = np.diff(self.t_grid)
 
@@ -36,18 +36,21 @@ class WienerProcess:
 
     def approximate_kl(self, n_samples: int, M: int, rng: np.random.Generator):
 
-        # TODO: generate n_samples realizations of the Wiener process
+        # ✓ TODO: generate n_samples realizations of the Wiener process
         # using the Karhunen-Loève expansion with M terms.
         # Generate mode indices, start at m, end at M incl.
         m = np.arange(1, M + 1)
         # Generate random var zeta for each time step and each mode
         zeta = rng.normal(0, 1, size=(n_samples, M))
 
-        # The reference formula from http://www.maths.lth.se/matstat/staff/georg/Publications/lecture2004.pdf, page 94
-        # starts for indices at k=0, so the code would be term = (m[:, None] + 0.5) * np.pi with m starting from 0
-        # But we start at m=1, hence - 0.5 in the line below
         term = (m[:, None] - 0.5) * np.pi
-        phi_eig = np.sqrt(2) * np.sin(term * self.t_grid[None, :]) / term
+        phi_eig = np.sqrt(2 * self.T) * np.sin(term / self.T * self.t_grid[None, :]) / term
+
+        processes = zeta @ phi_eig
+        # Shift by mean
+        processes += self.mu
+        return processes
+
 
         processes = zeta @ phi_eig
         # Shift by mean
@@ -56,22 +59,22 @@ class WienerProcess:
 
     def kl_eigenvalues(self, M: int):
 
-        # TODO: compute the first M eigenvalues of the Wiener process.
+        # ✓ TODO: compute the first M eigenvalues of the Wiener process.
         # Generate mode indices, start at m, end at M incl.
         m = np.arange(1, M + 1)
         return 1.0 / ((m - 0.5) ** 2 * np.pi ** 2)
 
     def kl_eigenfunctions(self, M: int):
 
-        # TODO: compute the first M eigenfunctions of the Wiener process.
+        # ✓ TODO: compute the first M eigenfunctions of the Wiener process.
         # It might be more conveniet to return a callable function that
         # returns evaluations of the first M eigenfunctions for the provided
         # time points.
         # Generate mode indices, start at m, end at M incl.
         m = np.arange(1, M + 1)
-        term = (m[:, None] - 0.5) * np.pi
+        term = (m[None, :] - 0.5) * np.pi
         # Return a callable for a certain time grid
-        return lambda t_grid: np.sqrt(2) * np.sin(term * t_grid[None, :])
+        return lambda t_grid: np.sqrt(2) * np.sin(term * t_grid[:, None])
 
     def kl_eigenpairs(self, M: int):
         eigenvalues = self.kl_eigenvalues(M)
